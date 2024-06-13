@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script type="text/javascript" src="https://stbtoken.sps-system.com/sbpstoken/com_sbps_system_token.js"></script>
+<script type="text/javascript">
+<!--
+function doSubmit(){
+// トークン生成ロジック呼び出し
+    com_sbps_system.generateToken({
+    merchantId : document.getElementById('merchant_id').value,
+    serviceId : document.getElementById('service_id').value,
+    ccNumber : document.getElementById('cc_number').value,
+    ccExpiration : document.getElementById('cc_expiration').value,
+    securityCode : document.getElementById('security_code').value
+    }, afterGenerateToken);
+}
+var afterGenerateToken = function(response) {
+    console.log(123123);
+    if (response.result == "OK") {
+    document.getElementById('token').value = response.tokenResponse.token;
+    document.getElementById('tokenKey').value = response.tokenResponse.tokenKey;
+    document.getElementById('cardBrandCode').value = response.tokenResponse.cardBrandCode;
+    // マスクされた番号で上書き
+    document.getElementById('cc_number').value = response.tokenResponse.maskedCcNumber;
+    // カード情報のクリア
+    document.getElementById('cc_expiration').value = '';
+    document.getElementById('security_code').value = '';
+    if(window.confirm('トークン取得しました。決済を実施します。')){
+    document.getElementById('frm').submit();
+    } else {
+    alert("キャンセルしました。");
+    }
+    } else {
+    alert('トークン取得に失敗しました。');
+    }
+}
+
+
+
+// -->
+</script>
+</head>
+    <body>
+        <form action=”https://stbfep.sps-system.com/xxxx/xxxxxxxx” method=”POST”>
+            <input type=”hidden” name=”pay_method” value=”credit3d”>
+            <input type=”hidden” name=”merchant_id” value=89051>
+            <input type=”hidden” name=”service_id” value=”001”>
+            <input type=”hidden” name=”cust_code” value=”XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX”>
+            <input type=”hidden” name=”sps_cust_no” value=””>
+            <input type=”hidden” name=”sps_payment_no” value=””>
+            <input type=”hidden” name=”last_charge_month” value=””>
+            <input type=”hidden” name=”camp_type” value=””>
+            <input type=”hidden” name=”tracking_id” value=””>
+            <input type=”hidden” name=”terminal_type” value=”0”>
+            <input type=”hidden” name=”success_ur l” value=”https://sample.domain/finish.aspx”>
+            <input type=”hidden” name=”cancel_ur l” value=”https://sample.domain/cancel.aspx”>
+            <input type=”hidden” name=”error_ur l” value=”https://sample.domain/error.aspx”>
+            <input type=”hidden” name=”pagecon_ur l” value=”https://sample.domain/result.aspx”>
+            <input type=”hidden” name=”free1” value=””>
+            <input type=”hidden” name=”free2” value=””>
+            <input type=”hidden” name=”free3” value=””>
+            <input type=”hidden” name=”free_csv” value=”“>
+            <input type=”hidden” name=”request_date” value=”20081015214001”>
+            <input type=”hidden” name=”sps_hashcode” value=”ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMN”>
+            <input type=”submit” value=”submit”>
+            </form>
+    </body>
+</html>

@@ -1,0 +1,517 @@
+<html>
+  <head>
+    <title>测试SB的ST环境</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+    <script src="https://developer.sbpayment.jp/js/base64.js"></script>
+    <script src="https://developer.sbpayment.jp/js/sha1.js"></script>
+    <script src="https://developer.sbpayment.jp/js/utf8.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/1.0.30/encoding.min.js"></script>
+  </head>
+
+  <body>
+    <script>
+      function toShiftJIS(utf8Array) {
+        const detected = Encoding.detect(utf8Array);
+        const unicodeList = [];
+        for (let i = 0; i < utf8Array.length; i += 1) {
+          unicodeList.push(utf8Array.charCodeAt(i));
+        }
+        const sjisArray = Encoding.convert(unicodeList, {
+          to: "SJIS",
+          from: detected,
+        });
+        return new Uint8Array(sjisArray);
+      }
+      //先頭ゼロ付加
+      function padZero(num) {
+        return (num < 10 ? "0" : "") + num;
+      }
+      //現在時刻取得（yyyymmddhhmmss）
+      function getCurrentTime() {
+        var now = new Date();
+        var res =
+          "" +
+          now.getFullYear() +
+          padZero(now.getMonth() + 1) +
+          padZero(now.getDate()) +
+          padZero(now.getHours()) +
+          padZero(now.getMinutes()) +
+          padZero(now.getSeconds());
+        return res;
+      }
+      // trip7 ST 环境的account
+      const trip7_merchant_id = "89051";
+      const trip7_hashkey = "360ef3765297792150ebf9ed162aa4e60901b71d";
+      // 本番
+      var connectUrlProduct =
+        "https://stbfep.sps-system.com/f01/FepBuyInfoReceive.do";
+      // ST环境
+      var connectUrlST =
+        "https://stbfep.sps-system.com/f01/FepBuyInfoReceive.do";
+      // 参数校验工具（Link型）
+      var connectUrlTestTool =
+        "https://stbfep.sps-system.com/Extra/BuyRequestAction.do";
+
+      var connectUrl = connectUrlTestTool;
+
+      function submitProduct() {
+        connectUrl = connectUrlProduct;
+        submitCredit();
+      }
+      function submitST() {
+        connectUrl = connectUrlST;
+        submitCredit();
+      }
+      function submitTestTool() {
+        connectUrl = connectUrlTestTool;
+        submitCredit();
+      }
+
+      const order_id_must_uniq = "order_id_" + Date.now(); //'20201101012950'; //// Date.now()
+      const request_current_ymdhms = getCurrentTime(); //'20201101012950'//// getCurrentTime(); // 2020-10-23 00:41:50
+
+      function submitCredit() {
+        var order = new Order();
+        order.pay_method = "credit3d2";
+        order.merchant_id = "89051";
+        order.service_id = "001";
+        order.cust_code = "d09a7e26e8ae3200";
+        order.sps_cust_no = "";
+        order.sps_payment_no = "";
+        order.order_id = "DONHANG1539";
+        order.item_id = "ITEM1";
+        order.pay_item_id = "";
+        order.item_name = "";
+        order.tax = "";
+        order.amount = "6000";
+        order.pay_type = "0";
+        order.auto_charge_type = "";
+        order.service_type = "0";
+        order.div_settele = "";
+        order.last_charge_month = "";
+        order.camp_type = "";
+        order.tracking_id = "";
+        order.terminal_type = "0";
+        order.success_url =
+          "http://stbfep.sps-system.com/MerchantPaySuccess.jsp";
+        order.cancel_url = "http://stbfep.sps-system.com/MerchantPayCancel.jsp";
+        order.error_url = "http://stbfep.sps-system.com/MerchantPayError.jsp";
+        order.pagecon_url =
+          "http://stbfep.sps-system.com/MerchantPayResultRecieveSuccess.jsp";
+        order.free1 = "";
+        order.free2 = "";
+        order.free3 = "";
+        order.free_csv_input =
+          "TDS2INFO_TOKEN=A3774EF01BA60CDC21F6802E81F9AD743E20DA0E5632254C7921031EA385492174DBE58E4EDEBF6B0AFCA9A9F1D7D24DBCD72CFA0DAF05CA7C5A688F51510EEE1EDDAF94ED127A7170347703DB5FCEE6ED882B6D14F1C29F4F76FE74ABA874F9F7625C7BA5AA0246361BA43D7C9019CEB52AE52C939D09B334CC88AACB874B8C2C08C662478EFC11018BE0662599EE93B18D1050EBB075C0A9D4A72D3DA34A875DDB7C726A9D05BFE30D140465BB3A0CC847538FF96AA5B3425DCB47F7D552FFB5305896B46E730EA5EB61694359771EF4E82D7649C0A8163A75852A9A2A9ADABDB896F171C8E16E24F53DE43D53E7BBC689757AC3D56CC54F756804704C573A8E4891D9FDAC2A76DDD806C222A9EAEC193EC5F584EF435B988E4B37F6BA4E2AACCCAC928A5D8CBF18221F49C1FED73F4E44472B93AC5D53A2F0A4ACF5E6028E8504650381D669E777122BAFA7DD79C97CBE227E5F4230D37B18,TDS2INFO_TOKEN_KEY=3059301306072A8648CE3D020106082A8648CE3D030107034200040279A8FA5DE3BBF89FCBB0AA6DEE3F8D5D61169FA1998637F9F3E680717719A7133E088812C2CFCB72C83F233F1C0A460A992D6DADEC1F30844DD12A365E81CC   ";
+        order.request_date = "20231012174106";
+        order.limit_second = "";
+        order.hashkey = "360ef3765297792150ebf9ed162aa4e60901b71d";
+
+        var orderDetail = new OrderDetail();
+        orderDetail.dtl_rowno = "";
+        orderDetail.dtl_item_id = "";
+        orderDetail.dtl_item_name = "";
+        orderDetail.dtl_item_count = "";
+        orderDetail.dtl_tax = "";
+        orderDetail.dtl_amount = "";
+        orderDetail.dtl_free1 = "";
+        orderDetail.dtl_free2 = "";
+        orderDetail.dtl_free3 = "";
+        order.orderDetail.push(orderDetail);
+
+        // フリーCSV
+        order.free_csv = base64.encode(order.free_csv_input, 1);
+
+        //チェックサム
+        order.sps_hashcode = Sha1.hash(order.toString());
+
+        feppost(order);
+      }
+
+      // オブジェクト定義[OrderDetail]
+      function OrderDetail() {
+        this.toString = function () {
+          var result =
+            this.dtl_rowno +
+            this.dtl_item_id +
+            this.dtl_item_name +
+            this.dtl_item_count +
+            this.dtl_tax +
+            this.dtl_amount +
+            this.dtl_free1 +
+            this.dtl_free2 +
+            this.dtl_free3;
+          return result;
+        };
+      }
+
+      // オブジェクト定義[Order]
+      function Order() {
+        this.orderDetail = new Array();
+        this.toString = function () {
+          var resultOrderDetail = "";
+          for (i = 0; i < this.orderDetail.length; i++) {
+            resultOrderDetail =
+              resultOrderDetail + this.orderDetail[i].toString();
+          }
+
+          var result =
+            this.pay_method +
+            this.merchant_id +
+            this.service_id +
+            this.cust_code +
+            this.sps_cust_no +
+            this.sps_payment_no +
+            this.order_id +
+            this.item_id +
+            this.pay_item_id +
+            this.item_name +
+            this.tax +
+            this.amount +
+            this.pay_type +
+            this.auto_charge_type +
+            this.service_type +
+            this.div_settele +
+            this.last_charge_month +
+            this.camp_type +
+            this.tracking_id +
+            this.terminal_type +
+            this.success_url +
+            this.cancel_url +
+            this.error_url +
+            this.pagecon_url +
+            this.free1 +
+            this.free2 +
+            this.free3 +
+            this.free_csv +
+            resultOrderDetail +
+            this.request_date +
+            this.limit_second +
+            this.hashkey;
+          return result;
+        };
+      }
+
+      // 日時の取得
+      function getYYYYMMDDHHMMSS() {
+        var now = new Date();
+        return (
+          now.getFullYear() +
+          zeroPadding(now.getMonth() + 1) +
+          zeroPadding(now.getDate()) +
+          zeroPadding(now.getHours()) +
+          zeroPadding(now.getMinutes()) +
+          zeroPadding(now.getSeconds())
+        );
+      }
+
+      function zeroPadding(num) {
+        if (num < 10) {
+          num = "0" + num;
+        }
+        return num + "";
+      }
+
+      function feppost(order) {
+        var form = $("<form></form>", {
+          action: connectUrl,
+          method: "POST",
+          "accept-charset": "shift_jis",
+        });
+
+        var body = $("body");
+        body.append(form);
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "pay_method",
+            value: order.pay_method,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "merchant_id",
+            value: order.merchant_id,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "service_id",
+            value: order.service_id,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "cust_code",
+            value: order.cust_code,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "sps_cust_no",
+            value: order.sps_cust_no,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "sps_payment_no",
+            value: order.sps_payment_no,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "order_id",
+            value: order.order_id,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "item_id",
+            value: order.item_id,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "pay_item_id",
+            value: order.pay_item_id,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "item_name",
+            value: order.item_name,
+          })
+        );
+        form.append(
+          $("<input>", { type: "hidden", name: "tax", value: order.tax })
+        );
+        form.append(
+          $("<input>", { type: "hidden", name: "amount", value: order.amount })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "pay_type",
+            value: order.pay_type,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "auto_charge_type",
+            value: order.auto_charge_type,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "service_type",
+            value: order.service_type,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "div_settele",
+            value: order.div_settele,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "last_charge_month",
+            value: order.last_charge_month,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "camp_type",
+            value: order.camp_type,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "tracking_id",
+            value: order.tracking_id,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "terminal_type",
+            value: order.terminal_type,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "success_url",
+            value: order.success_url,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "cancel_url",
+            value: order.cancel_url,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "error_url",
+            value: order.error_url,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "pagecon_url",
+            value: order.pagecon_url,
+          })
+        );
+        form.append(
+          $("<input>", { type: "hidden", name: "free1", value: order.free1 })
+        );
+        form.append(
+          $("<input>", { type: "hidden", name: "free2", value: order.free2 })
+        );
+        form.append(
+          $("<input>", { type: "hidden", name: "free3", value: order.free3 })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "free_csv",
+            value: order.free_csv,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "request_date",
+            value: order.request_date,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "limit_second",
+            value: order.limit_second,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "hashkey",
+            value: order.hashkey,
+          })
+        );
+        form.append(
+          $("<input>", {
+            type: "hidden",
+            name: "sps_hashcode",
+            value: order.sps_hashcode,
+          })
+        );
+
+        for (i = 0; i < order.orderDetail.length; i++) {
+          form.append(
+            $("<input>", {
+              type: "hidden",
+              name: "dtl_rowno",
+              value: order.orderDetail[i].dtl_rowno,
+            })
+          );
+          form.append(
+            $("<input>", {
+              type: "hidden",
+              name: "dtl_item_id",
+              value: order.orderDetail[i].dtl_item_id,
+            })
+          );
+          form.append(
+            $("<input>", {
+              type: "hidden",
+              name: "dtl_item_name",
+              value: order.orderDetail[i].dtl_item_name,
+            })
+          );
+          form.append(
+            $("<input>", {
+              type: "hidden",
+              name: "dtl_item_count",
+              value: order.orderDetail[i].dtl_item_count,
+            })
+          );
+          form.append(
+            $("<input>", {
+              type: "hidden",
+              name: "dtl_tax",
+              value: order.orderDetail[i].dtl_tax,
+            })
+          );
+          form.append(
+            $("<input>", {
+              type: "hidden",
+              name: "dtl_amount",
+              value: order.orderDetail[i].dtl_amount,
+            })
+          );
+          form.append(
+            $("<input>", {
+              type: "hidden",
+              name: "dtl_free1",
+              value: order.orderDetail[i].dtl_free1,
+            })
+          );
+          form.append(
+            $("<input>", {
+              type: "hidden",
+              name: "dtl_free2",
+              value: order.orderDetail[i].dtl_free2,
+            })
+          );
+          form.append(
+            $("<input>", {
+              type: "hidden",
+              name: "dtl_free3",
+              value: order.orderDetail[i].dtl_free3,
+            })
+          );
+        }
+        form.submit();
+      }
+    </script>
+    <input
+      type="button"
+      value="クレジットカードパラメータテスト"
+      onclick="submitTestTool()"
+    />
+    <br />
+    <input
+      type="button"
+      value="クレジットカードST環境テスト"
+      onclick="submitST()"
+    />
+    <br />
+    <input
+      type="button"
+      value="クレジットカード本番テスト"
+      onclick="submitProduct()"
+    />
+    <br />
+  </body>
+</html>

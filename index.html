@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<script type="text/javascript" src="https://stbtoken.sps-system.com/sbpstoken/com_sbps_system_tds2infotoken.js"></script>
+<script type="text/javascript">
+<!--
+function doSubmit(){
+    com_sbps_system_tds2.generateToken({
+        merchantId : document.getElementById('merchant_id').value,
+        serviceId : document.getElementById('service_id').value,
+    }, afterGenerateToken);
+}
+var afterGenerateToken = function(response) {
+    if (response.result == "OK") {
+        } else {
+        alert('トークン取得に失敗しました。');
+    }
+}
+// -->
+</script>
+</head>
+    <body>
+    <h1>トークン生成サンプル</h1>
+
+    <form name="frm" id="frm" method="POST" action="">
+    <dl>
+    <dt>マーチャント ID</dt>
+    <dd><input type="text" id="merchant_id" name="merchant_id" maxlength="5" value="89051"></dd>
+    <dt>サービス ID</dt>
+    <dd><input type="text" id="service_id" name="service_id" maxlength="3" value="001"></dd>
+    <dt>クレジットカード番号</dt>
+    <dd><input type="text" id="cc_number" name="cc_number" maxlength="16" value="3337000000200004"></dd>
+    <dt>クレジットカード有効期限</dt>
+    <dd><input type="text" id="cc_expiration" name="cc_expiration" maxlength="6" value="203512"></dd>
+    <dt>セキュリティコード</dt>
+    <dd><input type="text" id="security_code" name="security_code" maxlength="4" value="123"></dd>
+    </dl>
+    <dl>
+    <dt>トークン</dt>
+    <dd><input type="text" id="token" name="token" value="" disabled></dd>
+    <dt>トークンキー</dt>
+    <dd><input type="text" id="tokenKey" name="tokenKey" value="" disabled></dd>
+    <dt>カード会社ブランドコード</dt>
+    <dd><input type="text" id="cardBrandCode" name="cardBrandCode" value="test" disabled></dd>
+    </dl>
+    <table>
+    <tr><td>
+    <input type="button" name="btnSend" id="btnSend" value="送信" onClick="doSubmit()">
+    <input type="reset" name="btnReset" id="btnReset" value="リセット">
+    </td></tr>
+    </table>
+    </form>
+    </body>
+</html>
